@@ -10,23 +10,40 @@
 <body>
   <main class="app">
     <h1>DERIV Blockly Logic</h1>
-    <p class="subtitle">Natural language → normalized logic → Blockly</p>
+    <p class="subtitle">Text → Logic Model → Blockly → Logic Model</p>
+
     <label for="input">Describe the logic</label>
     <textarea id="input" rows="4">если последняя свеча красная, следующая операция вниз</textarea>
     <button id="build">Build logic</button>
-    <section><h2>Normalized logic</h2><pre id="normalized"></pre></section>
-    <section><h2>Blockly</h2><div id="blocklyDiv"></div></section>
+
+    <section>
+      <h2>Normalized Logic Model</h2>
+      <pre id="normalized"></pre>
+    </section>
+
+    <section>
+      <h2>Blockly</h2>
+      <p>Blockly is constrained by the source Logic Model. Any semantic mismatch is rejected.</p>
+      <div id="blocklyDiv"></div>
+    </section>
+
     <section>
       <h2>Workspace JSON</h2>
       <button id="save">Save JSON</button>
       <button id="load">Load JSON</button>
       <pre id="workspaceJson"></pre>
     </section>
-    <section><h2>Validation</h2><pre id="validation"></pre></section>
+
+    <section>
+      <h2>Semantic Validation</h2>
+      <pre id="validation"></pre>
+    </section>
   </main>
+
   <script src="logic/schema.js"></script>
   <script src="logic/normalizer.js"></script>
   <script src="logic/validator.js"></script>
+  <script src="logic/roundtrip.js"></script>
   <script src="logic/parser.js"></script>
   <script src="blocks/conditions.js"></script>
   <script src="blocks/actions.js"></script>
