@@ -1,8 +1,11 @@
 const normalized = document.getElementById("normalized");
 const validation = document.getElementById("validation");
+const simulation = document.getElementById("simulation");
 const input = document.getElementById("input");
 const saveButton = document.getElementById("save");
 const loadButton = document.getElementById("load");
+const simulateButton = document.getElementById("simulate");
+const exportButton = document.getElementById("export");
 const workspaceJson = document.getElementById("workspaceJson");
 
 const workspace = Blockly.inject("blocklyDiv", {
@@ -24,6 +27,8 @@ function setValidation(message, ok = false) {
 function setGates(enabled) {
   saveButton.disabled = !enabled;
   loadButton.disabled = !enabled;
+  simulateButton.disabled = !enabled;
+  exportButton.disabled = !enabled;
 }
 
 function renderLogic(logic) {
@@ -85,7 +90,7 @@ function handleWorkspaceChange() {
 
     setValidation(
       "BLOCKED — " + result.errors.join("\n") +
-      "\n\nSource model was not changed. Rebuilding the last valid Blockly state.",
+      "\n\nSource model was not changed. Restoring the last valid Blockly state.",
       false
     );
 
@@ -99,6 +104,7 @@ function build() {
   const errors = LogicValidator.validate(logic);
 
   normalized.textContent = JSON.stringify(logic, null, 2);
+  simulation.textContent = "";
 
   if (errors.length) {
     sourceLogic = null;
@@ -181,6 +187,43 @@ loadButton.addEventListener("click", () => {
 
   lastValidWorkspaceState = state;
   setValidation("Workspace JSON loaded and verified against the source Logic Model.", true);
+});
+
+simulateButton.addEventListener("click", () => {
+  const result = verifyWorkspace();
+  if (!result.ok) {
+    setValidation("SIMULATION BLOCKED — semantic verification failed.", false);
+    simulation.textContent = "";
+    return;
+  }
+
+  const candles = [
+    { direction: "DOWN" },
+    { direction: "UP" },
+    { direction: "DOWN" },
+    { direction: "DOWN" },
+    { direction: "UP" }
+  ];
+
+  const output = LogicSimulator.evaluate(sourceLogic, candles);
+  simulation.textContent = JSON.stringify(output, null, 2);
+  setValidation("Simulation completed from the approved Logic Model.", true);
+});
+
+exportButton.addEventListener("click", () => {
+  const result = verifyWorkspace();
+  if (!result.ok) {
+    setValidation("EXPORT BLOCKED — semantic verification failed.", false);
+    return;
+  }
+
+  const payload = LogicExporter.exportLogic(
+    sourceLogic,
+    WorkspaceStorage.save(workspace)
+  );
+
+  LogicExporter.downloadJson("deriv-blockly-logic.json", payload);
+  setValidation("Export completed from the verified Logic Model.", true);
 });
 
 workspace.addChangeListener(handleWorkspaceChange);
