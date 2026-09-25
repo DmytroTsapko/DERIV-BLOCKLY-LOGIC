@@ -1,25 +1,71 @@
 # DERIV-BLOCKLY-LOGIC
 
-Browser-only prototype for converting ordinary language into a strict logic model and a connected Blockly representation.
+Browser-only prototype for converting ordinary language into a strict Logic Model and a connected Blockly representation.
 
 ## Architecture
 
-User text → Parser → Normalizer → Logic Model → Validator → Blockly Renderer → JSON Save/Load → Tests
+```text
+Text
+  ↓
+Parser
+  ↓
+Normalizer
+  ↓
+Logic Schema
+  ↓
+Validator
+  ↓
+Blockly Renderer
+  ↓
+JSON Save / Load
+  ↓
+Automated Tests
+```
 
-The Logic Model is the source of truth. Blockly is a visual representation, not the semantic source.
+The Logic Model is the semantic source of truth.
 
-## Current V0.2
+## Bidirectional semantic gate
+
+The application verifies the complete round trip:
+
+```text
+Text
+  ↓
+Logic Model
+  ↓
+Blockly
+  ↓
+Logic Model
+```
+
+The reconstructed model from Blockly is canonicalized and compared with the original source model.
+
+Therefore:
+
+- changing a Blockly value that changes semantics is detected;
+- loading incompatible Workspace JSON is rejected;
+- incompatible Blockly state is automatically restored to the last valid state;
+- JSON save is allowed only after semantic verification.
+
+Blockly is a visual representation of the approved Logic Model, not an independent source of executable meaning.
+
+## Current V0.3
 
 - Strict intermediate schema in `logic/schema.js`
 - Parser and normalization separated
-- Deterministic validator
+- Deterministic schema validation
 - Connected custom Blockly IF / condition / action blocks
-- Blockly JSON save/load using Blockly serialization
-- Browser smoke tests for parser, validator and workspace serialization
+- Reverse Blockly → Logic Model extraction
+- Canonical semantic comparison
+- Workspace mutation gate
+- JSON import/export gate
+- Automated round-trip mismatch test
 
 ## Example
 
-Input: "если последняя свеча красная, следующая операция вниз"
+Input:
+
+"если последняя свеча красная, следующая операция вниз"
 
 Normalized model:
 
@@ -36,6 +82,12 @@ Normalized model:
     "type": "FALL"
   }
 }
+```
+
+Round-trip requirement:
+
+```text
+normalize(text) === BlocklyToLogic(render(normalize(text)))
 ```
 
 ## Scope
@@ -57,7 +109,8 @@ DERIV-BLOCKLY-LOGIC/
 │   ├── parser.js
 │   ├── schema.js
 │   ├── validator.js
-│   └── normalizer.js
+│   ├── normalizer.js
+│   └── roundtrip.js
 ├── blocks/
 │   ├── conditions.js
 │   ├── actions.js
@@ -67,13 +120,14 @@ DERIV-BLOCKLY-LOGIC/
 └── tests/
     ├── parser.test.js
     ├── validator.test.js
-    └── workspace.test.js
+    ├── workspace.test.js
+    └── roundtrip.test.js
 ```
 
-## Next development stage
+## Next stage
 
-1. Expand grammar without weakening the strict schema.
-2. Add semantic alignment tests for text → model → blocks.
-3. Add deterministic workspace → Logic Model extraction.
-4. Add stronger invalid-input handling.
-5. Add CI/browser tests before any export layer.
+1. Expand grammar without weakening the schema.
+2. Add semantic-equivalence tests for more logic patterns.
+3. Make Workspace → Logic Model extraction cover every supported block type.
+4. Add browser CI to execute the automated test suite.
+5. Add export only after semantic invariants remain green.
