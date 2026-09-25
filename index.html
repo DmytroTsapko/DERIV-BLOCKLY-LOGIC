@@ -1,0 +1,37 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>DERIV Blockly Logic</title>
+  <link rel="stylesheet" href="style.css">
+  <script src="https://unpkg.com/blockly/blockly.min.js"></script>
+</head>
+<body>
+  <main class="app">
+    <h1>DERIV Blockly Logic</h1>
+    <p class="subtitle">Natural language → normalized logic → Blockly</p>
+
+    <label for="input">Describe the logic</label>
+    <textarea id="input" rows="4">если последняя свеча красная, следующая операция вниз</textarea>
+    <button id="build">Build logic</button>
+
+    <section>
+      <h2>Normalized logic</h2>
+      <pre id="normalized"></pre>
+    </section>
+
+    <section>
+      <h2>Blockly</h2>
+      <div id="blocklyDiv"></div>
+    </section>
+
+    <section>
+      <h2>Validation</h2>
+      <pre id="validation"></pre>
+    </section>
+  </main>
+  <script src="logic/parser.js"></script>
+  <script src="app.js"></script>
+</body>
+</html>
