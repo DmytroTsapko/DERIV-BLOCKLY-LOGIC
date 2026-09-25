@@ -10,7 +10,7 @@
 <body>
   <main class="app">
     <h1>DERIV Blockly Logic</h1>
-    <p class="subtitle">Text → Logic Model → Blockly → Logic Model</p>
+    <p class="subtitle">Android → Chrome/WebView → Logic → Blockly → Verify → Simulate → Export</p>
 
     <label for="input">Describe the logic</label>
     <textarea id="input" rows="4">если последняя свеча красная, следующая операция вниз</textarea>
@@ -22,8 +22,8 @@
     </section>
 
     <section>
-      <h2>Blockly</h2>
-      <p>Blockly is constrained by the source Logic Model. Any semantic mismatch is rejected.</p>
+      <h2>Blockly Constructor</h2>
+      <p>Blockly is constrained by the approved Logic Model. Any semantic mismatch is rejected.</p>
       <div id="blocklyDiv"></div>
     </section>
 
@@ -32,6 +32,13 @@
       <button id="save">Save JSON</button>
       <button id="load">Load JSON</button>
       <pre id="workspaceJson"></pre>
+    </section>
+
+    <section>
+      <h2>Verification → Simulation → Export</h2>
+      <button id="simulate">Simulate</button>
+      <button id="export">Export JSON</button>
+      <pre id="simulation"></pre>
     </section>
 
     <section>
@@ -49,6 +56,8 @@
   <script src="blocks/actions.js"></script>
   <script src="blocks/toolbox.js"></script>
   <script src="storage/workspace.js"></script>
+  <script src="simulation/simulator.js"></script>
+  <script src="export/exporter.js"></script>
   <script src="app.js"></script>
 </body>
 </html>
