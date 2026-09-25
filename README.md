@@ -1,42 +1,79 @@
 # DERIV-BLOCKLY-LOGIC
 
-Browser prototype for converting ordinary language into normalized logic and a Blockly visual representation.
+Browser-only prototype for converting ordinary language into a strict logic model and a connected Blockly representation.
 
-## Flow
+## Architecture
 
-User text → parser → normalized logic → Blockly → validation
+User text → Parser → Normalizer → Logic Model → Validator → Blockly Renderer → JSON Save/Load → Tests
+
+The Logic Model is the source of truth. Blockly is a visual representation, not the semantic source.
+
+## Current V0.2
+
+- Strict intermediate schema in `logic/schema.js`
+- Parser and normalization separated
+- Deterministic validator
+- Connected custom Blockly IF / condition / action blocks
+- Blockly JSON save/load using Blockly serialization
+- Browser smoke tests for parser, validator and workspace serialization
+
+## Example
+
+Input: "если последняя свеча красная, следующая операция вниз"
+
+Normalized model:
+
+```json
+{
+  "version": "0.2",
+  "type": "IF",
+  "condition": {
+    "source": "LAST_CANDLE",
+    "operator": "EQUALS",
+    "value": "DOWN"
+  },
+  "action": {
+    "type": "FALL"
+  }
+}
+```
 
 ## Scope
 
-- Browser-only prototype
+- Browser-only
 - No Deriv account connection
 - No API keys
 - No real orders
 - No automated trading
 
-## Initial example
-
-"если последняя свеча красная, следующая операция вниз"
-
-becomes:
-
-IF LAST_CANDLE = DOWN → ACTION = FALL
-
 ## Structure
 
-- index.html
-- style.css
-- app.js
-- logic/parser.js
+```text
+DERIV-BLOCKLY-LOGIC/
+├── index.html
+├── style.css
+├── app.js
+├── logic/
+│   ├── parser.js
+│   ├── schema.js
+│   ├── validator.js
+│   └── normalizer.js
+├── blocks/
+│   ├── conditions.js
+│   ├── actions.js
+│   └── toolbox.js
+├── storage/
+│   └── workspace.js
+└── tests/
+    ├── parser.test.js
+    ├── validator.test.js
+    └── workspace.test.js
+```
 
-## Research basis
+## Next development stage
 
-The design follows established work on visual DSLs and natural-language-to-block programming. Current Blockly documentation recommends JSON serialization for new projects and supports custom block definitions using JSON/JavaScript.
-
-## Next stages
-
-1. Expand the parser grammar.
-2. Add deterministic validation.
-3. Add Blockly JSON save/load.
-4. Add test cases and semantic-alignment checks.
-5. Add export only after the logic layer is stable.
+1. Expand grammar without weakening the strict schema.
+2. Add semantic alignment tests for text → model → blocks.
+3. Add deterministic workspace → Logic Model extraction.
+4. Add stronger invalid-input handling.
+5. Add CI/browser tests before any export layer.
