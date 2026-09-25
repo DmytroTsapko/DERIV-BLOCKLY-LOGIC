@@ -1,30 +1,12 @@
 window.LogicParser = (() => {
-  function normalize(text) {
-    const s = text.toLowerCase().trim();
-    const candleDown = /красн|down|пад|вниз/.test(s);
-    const candleUp = /зел|up|рост|вверх/.test(s);
-    let condition = null;
-    let action = null;
-
-    if (candleDown) condition = "DOWN";
-    else if (candleUp) condition = "UP";
-
-    if (/операц.*вниз|следующ.*вниз|fall|put|sell/.test(s)) action = "FALL";
-    else if (/операц.*вверх|следующ.*вверх|rise|call|buy/.test(s)) action = "RISE";
-
-    return {
-      type: "IF",
-      condition: { variable: "LAST_CANDLE", equals: condition },
-      action
-    };
+  function parse(text) {
+    const s = String(text || "").toLowerCase().trim();
+    const direction = /красн|down|пад|вниз/.test(s) ? "DOWN"
+      : /зел|green|up|рост|вверх/.test(s) ? "UP" : null;
+    const action = /операц.*вниз|следующ.*вниз|fall|put|sell/.test(s) ? "FALL"
+      : /операц.*вверх|следующ.*вверх|rise|call|buy/.test(s) ? "RISE" : null;
+    return { condition: { source: "LAST_CANDLE", operator: "EQUALS", value: direction }, action: { type: action } };
   }
-
-  function validate(logic) {
-    const errors = [];
-    if (!logic.condition?.equals) errors.push("Condition is missing.");
-    if (!logic.action) errors.push("Action is missing.");
-    return errors;
-  }
-
-  return { normalize, validate };
+  function normalize(text) { return LogicNormalizer.normalize(parse(text)); }
+  return { parse, normalize };
 })();
