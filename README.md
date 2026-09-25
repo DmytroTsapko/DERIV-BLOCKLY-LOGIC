@@ -131,3 +131,36 @@ DERIV-BLOCKLY-LOGIC/
 3. Make Workspace → Logic Model extraction cover every supported block type.
 4. Add browser CI to execute the automated test suite.
 5. Add export only after semantic invariants remain green.
+
+## Runtime and development architecture
+
+```text
+Android
+  ↓
+Chrome / Android WebView
+  ↓
+Local browser application
+
+Development:
+Android → Chrome → GitHub Codespaces → GitHub repository
+```
+
+The UI is designed as a browser application, so the same logic core can run inside Chrome or an Android WebView. The project does not require a native trading SDK.
+
+## Full product pipeline
+
+```text
+Text
+  ↓
+Formal Logic
+  ↓
+Blockly Constructor / Visual Editor
+  ↓
+Bidirectional Verification
+  ↓
+Deterministic Simulation
+  ↓
+Versioned JSON Export
+```
+
+Simulation operates on explicit test data only. Export produces a logic artifact and Blockly workspace state; it does not execute trades.
